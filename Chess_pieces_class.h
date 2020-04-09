@@ -20,6 +20,7 @@ public:
 	std::string pic() { return piece; }
 	virtual void has_moved() = 0;
 };
+
 class empty : public chess_pieces {
 private:
 public:
@@ -167,7 +168,7 @@ public:
 		std::vector<std::pair<int, int>> move7;
 		std::vector<std::pair<int, int>> move8;
 		std::pair<int, int> movex;
-		for (int i = -7; i <= 7; i++) {
+		for (int i = 1; i <= 7; i++) {
 			movex.first = i; movex.second = i; move1.push_back(movex);
 			movex.first = i; movex.second = -i; move2.push_back(movex);
 			movex.first = 0; movex.second = i; move3.push_back(movex);
