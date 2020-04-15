@@ -2,6 +2,7 @@
 #define CHESS_BOARD
 #include<iostream>
 #include<string>
+
 #include"Chess_pieces_class.h"
 #include"Title.h"
 
@@ -15,7 +16,7 @@ private:
     static std::string p_to_q;
 public:
     matrix();    // Parameterized constructor
-
+    matrix(std::vector<std::pair<std::string, int>> board);
     ~matrix() {};    // Destructor
     // Access functions
     int index(int m, int n) const;
@@ -23,6 +24,7 @@ public:
     bool right_colour(int x, int y, std::string colour);
     std::string who_won();
     std::string has_queened() { return p_to_q; }
+    void restart() { winner = " "; }
 
     std::vector<std::pair<int, int>>  possible_moves(int i, int j);
     bool move_here(int i, int j, int x, int y);
@@ -30,6 +32,7 @@ public:
     void pawn_to_queen(int i, int j);
     void move_piece(int m, int n, int p, int q);
     void moves_out(int x, int y);
+    std::vector<std::pair<std::string, int>> save_board();
 };
 // member functon definitions
 matrix::matrix() {//parameterised constructor 
@@ -58,6 +61,29 @@ matrix::matrix() {//parameterised constructor
         }
     }
 }
+matrix::matrix(std::vector<std::pair<std::string, int>> board) {
+    matrix_data = new chess_pieces * [64];
+    for (size_t i = 0; i < 64; i++) {
+        matrix_data[i] = new empty();
+    }
+    for (size_t i = 0; i < board.size(); i++) {
+        delete matrix_data[board[i].second];
+        if (board[i].first == "bp") {matrix_data[board[i].second] = new pawn("b");}
+        else if (board[i].first == "wp") { matrix_data[board[i].second] = new pawn("w"); }
+        else if (board[i].first == "br") { matrix_data[board[i].second] = new rook("b"); }
+        else if (board[i].first == "wr") { matrix_data[board[i].second] = new rook("w"); }
+        else if (board[i].first == "bn") { matrix_data[board[i].second] = new knight("b"); }
+        else if (board[i].first == "wn") { matrix_data[board[i].second] = new knight("w"); }
+        else if (board[i].first == "bb") { matrix_data[board[i].second] = new bishop("b"); }
+        else if (board[i].first == "wb") { matrix_data[board[i].second] = new bishop("w"); }
+        else if (board[i].first == "bq") { matrix_data[board[i].second] = new queen("b"); }
+        else if (board[i].first == "wq") { matrix_data[board[i].second] = new queen("w"); }
+        else if (board[i].first == "bk") { matrix_data[board[i].second] = new king("b"); }
+        else if (board[i].first == "wk") { matrix_data[board[i].second] = new king("w"); }
+        else {}
+    }
+}
+
 std::string matrix::winner= " ";
 std::string matrix::p_to_q = "";
 int matrix::index(int m, int n) const { // Return position in array of element (m,n)
@@ -210,6 +236,19 @@ void matrix::moves_out(int x, int y) {
          std::cout<< std::endl;
     }
     std::cout << barrier << std::endl;
+}
+
+std::vector<std::pair<std::string, int>> matrix::save_board() {
+    std::vector<std::pair<std::string, int>> board;
+    std::pair<std::string, int> piece_location;
+    for (size_t i = 0; i < 64; i++) {
+        if (matrix_data[i]->piece_out() != "  ") {
+            piece_location.first = matrix_data[i]->piece_out();
+            piece_location.second = i;
+            board.push_back(piece_location);
+        }
+    }
+    return board;
 }
 
 std::ostream& operator<<(std::ostream& os, const matrix& mat) { // output matrix
