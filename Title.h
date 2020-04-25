@@ -1,6 +1,11 @@
-#pragma once
+//Tay Dzonu - C++ Chess code April 2020
+//Title.h - header file with non-class functions used both in classes and main
+#ifndef TITLE
+#define TITLE
+
 #include<iostream>
-void title() {
+
+inline void title() { //function to output the program title
 	std::cout << "    _____ _    _ ______  _____ _____ " << std::endl;
 	std::cout << "   / ____| |  | |  ____|/ ____/ ____|" << std::endl;
 	std::cout << "  | |    | |__| | |__  | (___| (___  " << std::endl;
@@ -9,7 +14,7 @@ void title() {
 	std::cout << "   \\_____|_|  |_|______|_____/_____/ " << std::endl << std::endl;
 	std::cout << "Created by Tay Dzonu , April 2020."<<std::endl<<std::endl;
 }
-std::string int_to_grid(int i) {
+inline std::string int_to_grid(int i) {//function to convert an integer to the corrsponding letter/grid value
 	if (i == 1) { return "A"; }
 	else if (i == 2) { return "B"; }
 	else if (i == 3) { return "C"; }
@@ -20,3 +25,5 @@ std::string int_to_grid(int i) {
 	else if (i == 8) { return "H"; }
 	else { return ""; }
 }
+
+#endif
