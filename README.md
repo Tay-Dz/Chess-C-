@@ -1,5 +1,5 @@
-# Chess-C-
-chess coded in c++
+# Chess C++
+Chess coded in c++
 
 To run the program:
 
