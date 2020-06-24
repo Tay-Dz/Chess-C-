@@ -3,9 +3,9 @@
 #ifndef CHESS_PIECES
 #define CHESS_PIECES
 
-#include<string>
+#include <string>
 #include <vector>
-#include<utility>
+#include <utility>
 
 class chess_pieces { //Abstract base class for chess pieces
 protected:

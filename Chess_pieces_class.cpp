@@ -1,7 +1,7 @@
 //Tay Dzonu - C++ Chess code April 2020
 //Chess_pieces_class.cpp - cpp file defining chess_pieces class functions
 
-#include"Chess_pieces_class.h"
+#include "Chess_pieces_class.h"
 
 std::vector<std::vector<std::pair<int, int>>>  empty::move() {//empty piece cannot move ->empty vector
 	std::vector<std::vector<std::pair<int, int>>> move_all;

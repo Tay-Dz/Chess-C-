@@ -1,0 +1,4 @@
+To run the program:
+
+.Compile all .cpp and .h files
+.Manually add all other .txt files to source/repos/'compiled code name'/'compiled code name' -> required to make the load function to work properly

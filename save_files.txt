@@ -1,5 +1,4 @@
 ##### File with saved data file names #####
 save1.txt
-save2.txt
-save_3.txt
-Iterator_check.txt
+corrupt_save_file_error_check.txt
+no_file_error_check.txt

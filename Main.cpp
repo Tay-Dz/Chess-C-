@@ -1,9 +1,9 @@
 //Tay Dzonu - C++ Chess code April 2020
 // Main.cpp - cpp file containing the main code to run the chess game and defining all functions required
-#include<fstream>
-#include<iomanip>
+#include <fstream>
+#include <iomanip>
 #include "BoardClass.h"
-#include"Title.h"
+#include "Title.h"
 
 //basic functions: changing between variables and commonly used outputs
 int grid_to_int(char grid_pos) { // converts grid position letter into the corresponding integer 
@@ -77,13 +77,22 @@ std::pair<chess_board, std::string>  load() { // function to load a game info fr
 	int list_number = 0;
 	int file_number;
 	bool file_opened = false;
-	std::cout << " You have selected to load a saved game file. The saved game files available are:" << std::endl;
 	std::ifstream save_file_names{ "save_files.txt" }; // opens file with save game file names
 	if (!save_file_names.good()) { // checks if it can be opened
 		std::cerr << std::endl << "Error: file could not be opened" << std::endl
 			<<"New game will be played instead"<<std::endl;
-		chess_board chessboard; load_game.first = chessboard; load_game.second = "White"; return load_game; //returns new game if file isnt found
+		chess_board chessboard; load_game.first = chessboard; load_game.second = "White";  //returns new game if file isnt found
+		std::cout << "Press [enter] to continue." << std::endl;
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		char end;
+		while (std::cin.get() != '\n') { //allows program to continue when enter is presses
+			std::cin >> end;
+		}
+		std::cout << std::endl;
+		return load_game;
 	}
+	std::cout << "You have selected to load a saved game file. The saved game files available are:" << std::endl;
 	std::getline(save_file_names, entry);
 	while (!save_file_names.eof()) {
 		list_number++;
@@ -95,8 +104,11 @@ std::pair<chess_board, std::string>  load() { // function to load a game info fr
 	while (!file_opened) { // loops until a file has been sucessfully opened
 		std::cout << std::endl << "Please enter which file number you like to open or 0 to play a new game?" << std::endl;
 		std::cin >> file_number;
+		bool working = true;
 		if (std::cin.fail() || file_number<0 || file_number>list_number) { // checks if a valid input has been entered
 			std::cout << "Input was invalid. Please enter a number between 1 and " << list_number << "." << std::endl;
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 		else {
 			if(file_number==0){ chess_board chessboard; load_game.first = chessboard; load_game.second = "White"; return load_game; } // returns new game if player decides not to open load game
@@ -119,7 +131,7 @@ std::pair<chess_board, std::string>  load() { // function to load a game info fr
 						std::string piece_info;
 						std::pair<std::string, int> piece_info_pair;
 						std::string location_str;
-						bool working = true;
+
 						while (!board_file.eof()&&working) {//loop until the end of the file has been reached
 							std::getline(board_file, piece_info);//gets info
 							piece_info_pair.first = piece_info.substr(0,2); // takes first two characters for piece type
@@ -141,27 +153,29 @@ std::pair<chess_board, std::string>  load() { // function to load a game info fr
 									}
 									else {}
 								}
-								catch (int exception) { // return to file selection if conversion is not possible
-									(void)exception;
+								catch (const std::invalid_argument& ia) { // return to file selection if conversion is not possible
 									std::cout << "File is corrupted. Please select another file." << std::endl;
 									board_file.close();
 									working = false;
+									(void) ia;
 									continue;
 								}
 							} 
 							board_input.push_back(piece_info_pair); // saves piece info
 							file_opened = true;
 						}
-						if (working) { board_file.close();
+						board_file.close();
+						if (working) { 
 							load_game.first = chess_board(board_input); //cretes a chess board from the load data
 							return load_game; 
 						}
-						else { continue; }
+						else { file_opened = false; }
 					}
 				}
 			}
 		}
 	}
+	return load_game;
 }
 
 // functions required for each players turn
@@ -178,7 +192,7 @@ std::pair<int,int> choose_piece(std::string go, chess_board board) { // function
 		else {
 			std::cin >> initial_pos.second;
 			try { initial_pos.first = grid_to_int(grid_in); } // checks if initial grid position character is valid and converts to an integer if it is
-			catch (int wrong_input) { initial_pos.first = 0; (void) wrong_input; } // returns 0 if not possible
+			catch (const std::invalid_argument& ia) { initial_pos.first = 0; (void)ia; } // returns 0 if not possible
 			if (initial_pos.first < 1 || initial_pos.first > 8 || initial_pos.second < 1 || initial_pos.second > 8||std::cin.fail()) { //checks if position is on the board
 				std::cout << "This position is not loacated on the board. please select a row between A and H, and colomn between 1 and 8" << std::endl;
 			}
@@ -186,12 +200,13 @@ std::pair<int,int> choose_piece(std::string go, chess_board board) { // function
 				std::cout << "There are no pieces located here. Please select another position." << std::endl;
 			}
 			else if (!board.right_colour(initial_pos.first, initial_pos.second, go)) { // checks if theuser has selected a piece of the right colour
-				std::cout << "You have selected a piece of the whong colour. please select a " << go << " piece." << std::endl;
+				std::cout << "You have selected a piece of the wrong colour. please select a " << go << " piece." << std::endl;
 			}
 			else if (board.possible_moves(initial_pos.first, initial_pos.second).empty()) { // checks if the piece has any posssible moves
 				std::cout << "This piece has no possible moves. Please select another piece." << std::endl;
 			}
 			else { can_move = true; } // ends loop if valid position has been chosen
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 	}
 	return initial_pos;
@@ -212,7 +227,7 @@ std::pair<int, int> move_piece(std::string go, chess_board board, std::pair<int,
 		else {
 			std::cin >> end.second;
 			try { end.first = grid_to_int(grid_in); }
-			catch (int wrong_input) { end.first = 0; (void)wrong_input;}
+			catch (const std::invalid_argument& ia) { end.first = 0; (void)ia; }
 			if (!board.test_move_here(start.first, start.second, end.first, end.second) || std::cin.fail()) { // checks if move is possible
 				std::cout << "This move is not valid. Please select a valid move shown by the X's." << std::endl;
 			}
@@ -254,14 +269,14 @@ std::pair<chess_board,std::string> start() { // function which shows the start s
 	std::string new_or_load;
 	bool game_start = false;
 	bool play = 0;
-	std::cout << "Welcome to Chess in C++. For the rules how to play and help press [R]. To play a game please press [P].";
+	std::cout << "Welcome to Chess in C++. For the rules how to play and help press [R]. To play a game please press [P]." << std::endl;;
 	while (!play) { // check if the players are ready to play a game
 		std::cin >> play_or_help;
-		if (play_or_help == "r"||play_or_help=="R") { help(); std::cout << "Welcome to Chess in C++. For the rules how to play and help press [R]. To play a game please press [P].";} // show help function
+		if (play_or_help == "r"||play_or_help=="R") { help(); std::cout << "Welcome to Chess in C++. For the rules how to play and help press [R]. To play a game please press [P]."<<std::endl;} // show help function
 		else if(play_or_help =="p"||play_or_help =="P"){play = 1;} 
 		else { std::cout << "Input is invalid. Please enter [R] to get rules and help or [P] to play a game." << std::endl; }
 	}
-	std::cout << "Would you like to start a new game [N] or load a saved game [L]?";
+	std::cout << "Would you like to start a new game [N] or load a saved game [L]?"<<std::endl;
 	while (!game_start) { // loop to check if they want to play a new game or load a game
 		std::cin >> new_or_load;
 		if (new_or_load == "l" || new_or_load == "L") { return load(); } // return a board defined by a save file
@@ -332,9 +347,9 @@ void play_game(chess_board board, std::string start) { // function for playing t
 int main() {// main function for running program
 	bool play_again = true;
 	while (play_again==true){ //loop until the players no longer want to play another game
-	std::pair<chess_board, std::string> chessboard_first = start(); // start screen + finds if they want to play a new game or saved game
-	play_game(chessboard_first.first,chessboard_first.second); // run game
-	play_again = another_game(chessboard_first.first); // checks if they want to play again
+	std::pair<chess_board, std::string> chessboard = start(); // start screen + finds if they want to play a new game or saved game
+	play_game(chessboard.first,chessboard.second); // run game
+	play_again = another_game(chessboard.first); // checks if they want to play again
 	}
 	std::cout << std::endl << "Thank you for playing!" << std::endl;
 	return 0;

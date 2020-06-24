@@ -3,7 +3,7 @@
 #ifndef TITLE
 #define TITLE
 
-#include<iostream>
+#include <iostream>
 
 inline void title() { //function to output the program title
 	std::cout << "    _____ _    _ ______  _____ _____ " << std::endl;
